@@ -1,5 +1,3 @@
-# pabd25
-
 ## Housing Price Prediction Model
 
 ### Описание проекта
