@@ -4,8 +4,23 @@ import logging
 app = Flask(__name__)
 
 # Настройка логгера
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Формат логирования
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+# Лог в файл
+file_handler = logging.FileHandler('service/log.txt', encoding='utf-8')
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+# Лог в консоль
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 # Маршрут для отображения формы
 @app.route('/')
@@ -16,6 +31,7 @@ def index():
 @app.route('/api/numbers', methods=['POST'])
 def process_numbers():
     params = request.get_json()
+
     try:
         area = int(params['area'])
         rooms = int(params['rooms'])
@@ -24,11 +40,19 @@ def process_numbers():
 
         # Валидация
         if not (1 <= rooms <= 4):
-            return jsonify({'error': 'Количество комнат должно быть от 1 до 4 включительно.'}), 400
+            error_msg = 'Количество комнат должно быть от 1 до 4 включительно.'
+            logger.warning(error_msg)
+            return jsonify({'error': error_msg}), 400
+
         if totalfloors > 50:
-            return jsonify({'error': 'Этажей в доме не может быть больше 50.'}), 400
+            error_msg = 'Этажей в доме не может быть больше 50.'
+            logger.warning(error_msg)
+            return jsonify({'error': error_msg}), 400
+
         if floor > totalfloors:
-            return jsonify({'error': 'Этаж квартиры не может быть больше, чем этажей в доме.'}), 400
+            error_msg = 'Этаж квартиры не может быть больше, чем этажей в доме.'
+            logger.warning(error_msg)
+            return jsonify({'error': error_msg}), 400
 
         price = area * rooms * totalfloors * floor
 
