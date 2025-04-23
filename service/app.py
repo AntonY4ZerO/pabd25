@@ -54,11 +54,13 @@ def process_numbers():
             logger.warning(error_msg)
             return jsonify({'error': error_msg}), 400
 
-        price = area * rooms * totalfloors * floor
+        price = 300000*area
 
         logger.info(f'Полученные данные: Площадь = {area}, Комнаты = {rooms}, Этажей в доме = {totalfloors}, Этаж квартиры = {floor}')
         logger.info(f'Расчётная цена: {price}')
 
+        logger.info(f'Расчётная цена: {price}')
+        logger.info('Статус: success')
         return {'Цена': price}
 
     except (ValueError, TypeError, KeyError) as e:
