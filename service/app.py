@@ -58,8 +58,6 @@ def process_numbers():
 
         logger.info(f'Полученные данные: Площадь = {area}, Комнаты = {rooms}, Этажей в доме = {totalfloors}, Этаж квартиры = {floor}')
         logger.info(f'Расчётная цена: {price}')
-
-        logger.info(f'Расчётная цена: {price}')
         logger.info('Статус: success')
         return {'Цена': price}
 
