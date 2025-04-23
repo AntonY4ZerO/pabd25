@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Форма ввода чисел</title>
+    <title>Формирование цены на квартиру</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,12 +40,12 @@
 </head>
 <body>
     <div class="form-container">
-        <h2>Введите четыре числа</h2>
+        <h2>Формирование цены на квартиру</h2>
         <form id="numberForm">
-            <input type="number" id="num1" placeholder="Число 1" required>
-            <input type="number" id="num2" placeholder="Число 2" required>
-            <input type="number" id="num3" placeholder="Число 3" required>
-            <input type="number" id="num4" placeholder="Число 4" required>
+            <input type="number" id="num1" placeholder="Площадь квартиры, м2" onkeyup="if(this.value<0){this.value= this.value * -1}" required>
+            <input type="number" id="num2" placeholder="Кол-во комнат" onkeyup="if(this.value<0){this.value= this.value * -1}" required>
+            <input type="number" id="num3" placeholder="Этажей в доме" onkeyup="if(this.value<0){this.value= this.value * -1}" required>
+            <input type="number" id="num4" placeholder="Этаж квартиры" onkeyup="if(this.value<0){this.value= this.value * -1}" required>
             <button type="button" onclick="submitForm()">Отправить</button>
         </form>
         <div id="response"></div>
@@ -59,10 +59,10 @@
             const num4 = document.getElementById('num4').value;
 
             const data = {
-                number1: num1,
-                number2: num2,
-                number3: num3,
-                number4: num4
+                area: num1,
+                rooms: num2,
+                totalfloors: num3,
+                floor: num4
             };
 
             fetch('/api/numbers', {
