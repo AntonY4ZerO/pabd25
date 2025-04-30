@@ -1,3 +1,11 @@
 cianparser
 pandas
 flask
+pandas
+glob
+numpy
+os
+plotly
+logging
+joblib
+scikit-learn

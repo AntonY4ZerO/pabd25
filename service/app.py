@@ -1,7 +1,11 @@
-from flask import Flask, json, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request
 import logging
+import joblib
+import pandas as pd
 
 app = Flask(__name__)
+# === Загрузка модели ===
+model = joblib.load('models/linear_regression_model.pkl') #notebooks\models\linear_regression_model.pkl
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -11,7 +15,7 @@ logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
 # Лог в файл
-file_handler = logging.FileHandler('service/log.txt', encoding='utf-8')
+file_handler = logging.FileHandler('service/app_logs.log', encoding='utf-8')
 file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
@@ -31,6 +35,7 @@ def index():
 @app.route('/api/numbers', methods=['POST'])
 def process_numbers():
     params = request.get_json()
+
 
     try:
         area = int(params['area'])
@@ -54,12 +59,14 @@ def process_numbers():
             logger.warning(error_msg)
             return jsonify({'error': error_msg}), 400
 
-        price = 300000*area
+        # Подготовка данных и предсказание
+        input_df = pd.DataFrame({'total_meters': [area]})
+        predicted_price = model.predict(input_df)[0]
 
         logger.info(f'Полученные данные: Площадь = {area}, Комнаты = {rooms}, Этажей в доме = {totalfloors}, Этаж квартиры = {floor}')
-        logger.info(f'Расчётная цена: {price}')
+        logger.info(f'Расчётная цена: {predicted_price}')
         logger.info('Статус: success')
-        return {'Цена': price}
+        return {'Цена': predicted_price}
 
     except (ValueError, TypeError, KeyError) as e:
         logger.error(f'Ошибка обработки данных: {e}')
