@@ -111,9 +111,7 @@ def preprocess_data():
 
 def train_model(model_name):
     # Загрузка данных
-    data = pd.read_csv(
-        "C:/Users/aziny/VSProjects/pabd25/pabd25/data/processed/merged_cleaned.csv"
-    )
+    data = pd.read_csv("../pabd25/data/processed/merged_cleaned.csv")
 
     # Удаление пропусков (если есть)
     data = data.dropna(
