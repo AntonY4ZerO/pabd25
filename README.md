@@ -27,7 +27,7 @@ housing_price_prediction/
 ### Как запустить
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/labintsev/pabd25.git
+git clone https://github.com/AntonY4ZerO/pabd25.git
 ```
 
 2. Создайте venv и установите зависимости:
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 3. Запустите цикл сбора данных и обучения:
 ```bash
-python src/lifecycle.py --parse_data
+python src/lifecycle.py --model --pages
 ```
 
 ### Признаки
@@ -55,7 +55,7 @@ python src/lifecycle.py --parse_data
 ### Данные
 Собраны в период с 16.04.2025 по 14.05.2025  
 В выборке 1, 2, 3, 4 комнатные квартиры  
-Цена до 100 млн, площадь до 100 м2  
+Цена до 100 млн, площадь до 300 м2  
 
 ### Метрики оценки
 * **Mean Absolute Error (MAE)**
@@ -91,7 +91,7 @@ python src/lifecycle.py --parse_data
 ### Использование сервиса предиктивной аналитики в dev mode
 1. Запустите сервис с указанием имени модели
 ```sh
-python service/app.py -m model_path
+python service/app.py
 ```
 2. Веб приложение доступно по ссылке `http://127.0.0.1:5000` 
 3. API endpoint доступен  по ссылке `http://127.0.0.1:5000/api/numbers`
