@@ -2,7 +2,6 @@ from flask import Flask, jsonify, render_template, request
 import logging
 import joblib
 import pandas as pd
-import subprocess
 import argparse
 
 app = Flask(__name__)
