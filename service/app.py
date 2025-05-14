@@ -41,7 +41,7 @@ def format_price(price):
 def load_models():
     models = {}
     for i in range(1, 5):
-        model_name = f"xgboost_model_{i}room_v1"
+        model_name = f"linreg_model_{i}room_v1"
         try:
             models[i] = joblib.load(f"models/{model_name}.pkl")
             logger.info(f"Модель {model_name} успешно загружена.")

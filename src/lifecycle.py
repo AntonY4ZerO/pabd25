@@ -134,13 +134,7 @@ def train_model(model_name):
     )
 
     # Обучение модели
-    model = xgb.XGBRegressor(
-        n_estimators=100,
-        max_depth=3,
-        learning_rate=0.1,
-        objective="reg:squarederror",
-        random_state=42,
-    )
+    model = LinearRegression()
     model.fit(X_train, y_train)
 
     # Предсказание на тестовых данных
@@ -157,7 +151,8 @@ def train_model(model_name):
     logging.info(f"Корень из MSE (RMSE): {rmse:.2f}")
     logging.info(f"Коэффициент детерминации R²: {r2:.6f}")
     logging.info(f"Средняя абсолютная ошибка (MAE): {mae:.2f} рублей")
-    logging.info(f"Важности признаков: {model.feature_importances_}")
+    logging.info(f"Коэффициент при площади: {model.coef_[0]:.2f}")
+    logging.info(f"Свободный член (intercept): {model.intercept_:.2f}")
 
     # Сохранение модели
     os.makedirs("../pabd25/models", exist_ok=True)
