@@ -8,11 +8,14 @@ import numpy as np
 import os
 import joblib
 import logging
+import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import GradientBoostingRegressor
 import argparse
+
 
 # Настройка логгера
 os.makedirs("../pabd25/notebooks/logs", exist_ok=True)
@@ -131,7 +134,13 @@ def train_model(model_name):
     )
 
     # Обучение модели
-    model = LinearRegression()
+    model = xgb.XGBRegressor(
+        n_estimators=100,
+        max_depth=3,
+        learning_rate=0.1,
+        objective="reg:squarederror",
+        random_state=42,
+    )
     model.fit(X_train, y_train)
 
     # Предсказание на тестовых данных
@@ -148,8 +157,7 @@ def train_model(model_name):
     logging.info(f"Корень из MSE (RMSE): {rmse:.2f}")
     logging.info(f"Коэффициент детерминации R²: {r2:.6f}")
     logging.info(f"Средняя абсолютная ошибка (MAE): {mae:.2f} рублей")
-    logging.info(f"Коэффициент при площади: {model.coef_[0]:.2f}")
-    logging.info(f"Свободный член (intercept): {model.intercept_:.2f}")
+    logging.info(f"Важности признаков: {model.feature_importances_}")
 
     # Сохранение модели
     os.makedirs("../pabd25/models", exist_ok=True)
@@ -202,7 +210,7 @@ if __name__ == "__main__":
         help="Amount of pages to parse",
     )
     args = parser.parse_args()
-    parse_cian(args.pages)
+    # parse_cian(args.pages)
     preprocess_data()
     train_model(args.model)
     test_model(args.model)

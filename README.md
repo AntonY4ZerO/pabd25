@@ -9,20 +9,19 @@ housing_price_prediction/
 ├── data/
 │   ├── raw/                # Исходные данные
 │   ├── processed/          # Обработанные данные
-│   └── sample_submission.csv
 ├── models/                 # Обученные модели
-├── notebooks/             # Jupyter notebooks
-├── src/                   # Исходный код
-│   ├── data.py            # Обработка данных
-│   ├── models.py          # Модели машинного обучения
-│   └── utils.py           # Вспомогательные функции
-├── requirements.txt       # Требования к зависимостям
+├── notebooks/              # Jupyter notebooks
+│   ├── EDA.ipynb           # Предобработка данных
+│   └── Train.ipynb         # Обучение моделей
+├── service/                # Сервис предсказания цены на недвижимость
+│   ├── templates/          # Шаблоны для веб-приложения
+│   │    └── index.html     # Шаблон веб-приложения
+│   └── app.py              # Flask приложение
+├── src/                    # Исходный код
+│   ├── lifecycle.py        # Жизненный цикл приложения
+│   └── parse_cian.py       # Парсер исходных данных с циана
+├── requirements.txt        # Требования к зависимостям
 └── README.md
-```
-
-### Требования
-```bash
-pip install -r requirements.txt
 ```
 
 ### Данные
@@ -39,7 +38,7 @@ pip install -r requirements.txt
 ### Как запустить
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/yourusername/housing_price_prediction.git
+git clone https://github.com/AntonY4ZerO/pabd25.git
 ```
 
 2. Установите зависимости:
@@ -53,11 +52,7 @@ jupyter notebook
 ```
 
 ### Модели машинного обучения
-* **Linear Regression** - базовая линейная регрессия
-* **Random Forest** - ансамбль деревьев решений
-* **Gradient Boosting** - градиентный бустинг
 * **XGBoost** - экстремальный градиентный бустинг
-* **Neural Networks** - нейронные сети
 
 ### Метрики оценки
 * **Mean Absolute Error (MAE)**
@@ -66,10 +61,29 @@ jupyter notebook
 * **R² Score**
 
 ### Результаты
-После обучения модели достигаются следующие результаты:
-* MAE: ~$2000
-* RMSE: ~$2500
-* R² Score: ~0.85
+После обучения модели для 1 комнатных квартир достигаются следующие результаты:
+* MAE: 2_938_273
+* MSE: 18_188_127_436_800
+* RMSE: 4_264_754
+* R² Score: 0.928815
+
+После обучения модели для 2 комнатных квартир достигаются следующие результаты:
+* MAE: 9_067_982
+* MSE: 205_362_904_956_928
+* RMSE: 14.330.488
+* R² Score: 0.903337
+
+После обучения модели для 3 комнатных квартир достигаются следующие результаты:
+* MAE: 21_986_646
+* MSE: 1_340_105_629_368_320
+* RMSE: 36_607_453
+* R² Score: 0.767616
+
+После обучения модели для 4 комнатных квартир достигаются следующие результаты:
+* MAE: 53_474_676
+* MSE: 10_850_569_153_413_120
+* RMSE: 104_166_065
+* R² Score: 0.588426
 
 ### Как использовать модель
 1. Загрузите данные в формате CSV
@@ -78,15 +92,11 @@ jupyter notebook
 4. Сделайте предсказания
 
 ### Команда
-* **Data Scientist**: [Имя Фамилия]
-* **ML Engineer**: [Имя Фамилия]
-* **Product Manager**: [Имя Фамилия]
-
-### Лицензирование
-Этот проект распространяется под лицензией MIT. Смотрите файл LICENSE для деталей.
+* **Data Scientist**: Антон Зиняков
+* **ML Engineer**: Антон Зиняков
+* **Product Manager**: Антон Зиняков
 
 ### Контакты
 Для вопросов и предложений обращайтесь:
-* Email: your.email@example.com
-* GitHub: @yourusername
-* LinkedIn: linkedin.com/in/yourusername
+* Email: azinyakov@gmail.com
+* GitHub: @AntonY4ZerO

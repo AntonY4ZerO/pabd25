@@ -37,15 +37,21 @@ def format_price(price):
     )
 
 
-# Загружаем модель из файла, переданного в качестве аргумента
-def load_model(model_name):
-    try:
-        model = joblib.load(f"models/{model_name}.pkl")
-        logger.info(f"Модель {model_name} успешно загружена.")
-        return model
-    except FileNotFoundError:
-        logger.error(f"Модель {model_name} не найдена.")
-        raise
+# Загрузка всех моделей при старте
+def load_models():
+    models = {}
+    for i in range(1, 5):
+        model_name = f"xgboost_model_{i}room_v1"
+        try:
+            models[i] = joblib.load(f"models/{model_name}.pkl")
+            logger.info(f"Модель {model_name} успешно загружена.")
+        except FileNotFoundError:
+            logger.warning(f"Модель {model_name} не найдена.")
+    return models
+
+
+# Инициализация моделей
+models = load_models()
 
 
 # Аргументы командной строки
@@ -93,8 +99,13 @@ def process_numbers():
             logger.warning(error_msg)
             return jsonify({"error": error_msg}), 400
 
-        # Подготовка данных и предсказание
-        # Подготовка DataFrame из всех признаков
+        # Проверка наличия соответствующей модели
+        if rooms not in models:
+            error_msg = f"Модель для {rooms} комнат не найдена."
+            logger.error(error_msg)
+            return jsonify({"error": error_msg}), 500
+
+        # Подготовка данных
         input_df = pd.DataFrame(
             [
                 {
@@ -106,9 +117,11 @@ def process_numbers():
             ]
         )
 
-        predicted_price = model.predict(input_df)[0]
+        # Предсказание с соответствующей моделью
+        predicted_price = models[rooms].predict(input_df)[0]
         formatted_price = format_price(predicted_price)
 
+        logger.info(f"Используется модель: xgboost_model_{rooms}room_v1")
         logger.info(
             f"Полученные данные: Площадь = {area}, Комнаты = {rooms}, Этажей в доме = {totalfloors}, Этаж квартиры = {floor}"
         )
@@ -122,8 +135,4 @@ def process_numbers():
 
 
 if __name__ == "__main__":
-    model_name = (
-        get_model_name_from_args()
-    )  # Получаем название модели из аргументов командной строки
-    model = load_model(model_name)  # Загружаем модель
     app.run(debug=True)

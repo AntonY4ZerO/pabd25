@@ -9,3 +9,4 @@ plotly
 logging
 joblib
 scikit-learn
+xgboost
