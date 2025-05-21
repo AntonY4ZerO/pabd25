@@ -26,6 +26,25 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 
+# --- Аргументы командной строки ---
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Flask-приложение для предсказания цены"
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        type=int,
+        required=True,
+        help="Версия модели (например, 1, 2, 3...)",
+    )
+    return parser.parse_args()
+
+
+args = parse_args()
+model_version = args.version
+
+
 def format_price(price):
     millions = int(price // 1_000_000)
     thousands = int((price % 1_000_000) // 1_000)
@@ -36,13 +55,14 @@ def format_price(price):
     )
 
 
-# Загрузка всех моделей при старте
-def load_models():
+# Загрузка моделей по версии
+def load_models(version):
     models = {}
     for i in range(1, 5):
-        model_name = f"xgboost_model_{i}room_v1"
+        model_name = f"xgboost_model_{i}room_v{version}"
+        model_path = f"models/{model_name}.pkl"
         try:
-            models[i] = joblib.load(f"models/{model_name}.pkl")
+            models[i] = joblib.load(model_path)
             logger.info(f"Модель {model_name} успешно загружена.")
         except FileNotFoundError:
             logger.warning(f"Модель {model_name} не найдена.")
@@ -50,19 +70,7 @@ def load_models():
 
 
 # Инициализация моделей
-models = load_models()
-
-
-# Аргументы командной строки
-def get_model_name_from_args():
-    parser = argparse.ArgumentParser(
-        description="Запуск приложения для предсказания цены"
-    )
-    parser.add_argument(
-        "-m", "--model", required=True, help="Название модели (без расширения .pkl)"
-    )
-    args = parser.parse_args()
-    return args.model
+models = load_models(model_version)
 
 
 # Маршрут для отображения формы

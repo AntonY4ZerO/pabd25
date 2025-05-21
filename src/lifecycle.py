@@ -112,91 +112,111 @@ def preprocess_data():
     df.to_csv("../pabd25/data/processed/merged_cleaned.csv", encoding="utf-8")
 
 
-def train_model(model_name):
-    # Загрузка данных
-    data = pd.read_csv("../pabd25/data/processed/merged_cleaned.csv")
+def train_model(model_prefix):
+    raw_dir = "../pabd25/data/raw"
+    model_dir = "../pabd25/models"
+    os.makedirs(model_dir, exist_ok=True)
 
-    # Удаление пропусков (если есть)
-    data = data.dropna(
-        subset=["total_meters", "floor", "floors_count", "rooms_count", "price"]
-    )
+    for room_count in range(1, 5):
+        file_path = os.path.join(raw_dir, f"{room_count}_rooms.csv")
+        if not os.path.exists(file_path):
+            logging.warning(f"Файл не найден: {file_path}")
+            continue
 
-    # Сортировка данных по индексу (или можно по дате, если есть такой столбец)
-    data = data.sort_index(ascending=True)
+        try:
+            df = pd.read_csv(file_path)
+            df = df[["total_meters", "floor", "floors_count", "rooms_count", "price"]]
+            df = df.dropna()
+            df = df[(df["total_meters"] <= 300) & (df["price"] < 100_000_000)]
+        except Exception as e:
+            logging.error(f"Ошибка обработки {file_path}: {e}")
+            continue
 
-    # Разделение данных на признаки и цель
-    X = data[["total_meters", "floor", "floors_count", "rooms_count"]]
-    y = data["price"]
+        if df.empty:
+            logging.warning(f"Нет подходящих данных для {room_count} комнат")
+            continue
 
-    # Разделение на обучающую и тестовую выборки (по 80% и 20% соответственно)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, shuffle=False
-    )
+        df = df.sort_index()
+        X = df[["total_meters", "floor", "floors_count", "rooms_count"]]
+        y = df["price"]
 
-    # Обучение модели
-    model = xgb.XGBRegressor(
-        n_estimators=100,
-        max_depth=3,
-        learning_rate=0.1,
-        objective="reg:squarederror",
-        random_state=42,
-    )
-    model.fit(X_train, y_train)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, shuffle=False
+        )
 
-    # Предсказание на тестовых данных
-    y_pred = model.predict(X_test)
+        model = xgb.XGBRegressor(
+            n_estimators=100,
+            max_depth=3,
+            learning_rate=0.1,
+            objective="reg:squarederror",
+            random_state=42,
+        )
+        model.fit(X_train, y_train)
 
-    # Метрики
-    mse = mean_squared_error(y_test, y_pred)
-    rmse = np.sqrt(mse)
-    r2 = r2_score(y_test, y_pred)
-    mae = np.mean(np.abs(y_test - y_pred))
+        y_pred = model.predict(X_test)
+        mse = mean_squared_error(y_test, y_pred)
+        rmse = np.sqrt(mse)
+        r2 = r2_score(y_test, y_pred)
+        mae = np.mean(np.abs(y_test - y_pred))
 
-    # Логирование метрик
-    logging.info(f"Среднеквадратичная ошибка (MSE): {mse:.2f}")
-    logging.info(f"Корень из MSE (RMSE): {rmse:.2f}")
-    logging.info(f"Коэффициент детерминации R²: {r2:.6f}")
-    logging.info(f"Средняя абсолютная ошибка (MAE): {mae:.2f} рублей")
-    logging.info(f"Важности признаков: {model.feature_importances_}")
+        logging.info(
+            f"[{room_count} комн] MSE: {mse:.2f}, RMSE: {rmse:.2f}, R²: {r2:.4f}, MAE: {mae:.2f}"
+        )
 
-    # Сохранение модели
-    os.makedirs("../pabd25/models", exist_ok=True)
-    model_path = f"../pabd25/models/{model_name}.pkl"
+        # Автоопределение версии
+        base_name = f"{model_prefix}_{room_count}room"
+        existing = glob.glob(os.path.join(model_dir, f"{base_name}_v*.pkl"))
+        versions = [
+            int(f.split("_v")[-1].replace(".pkl", "")) for f in existing if "_v" in f
+        ]
+        next_version = max(versions, default=0) + 1
 
-    joblib.dump(model, model_path)
-
-    logging.info(f"Модель сохранена: {model_path}")
+        model_path = os.path.join(model_dir, f"{base_name}_v{next_version}.pkl")
+        joblib.dump(model, model_path)
+        logging.info(f"Модель сохранена: {model_path}")
 
 
 def test_model(model_name):
-    # Загрузка модели
-    model_path = f"../pabd25/models/{model_name}.pkl"
-    model = joblib.load(model_path)
-    logging.info(f"Модель загружена из: {model_path}")
+    model_dir = "../pabd25/models"
 
-    # Массив входных данных
-    data = [
-        {"total_meters": 45, "floor": 2, "floors_count": 5, "rooms_count": 2},
-        {"total_meters": 60, "floor": 4, "floors_count": 9, "rooms_count": 3},
-        {"total_meters": 30, "floor": 1, "floors_count": 3, "rooms_count": 1},
-        {"total_meters": 80, "floor": 6, "floors_count": 12, "rooms_count": 4},
-    ]
+    # Тестовые входные данные по количеству комнат
+    test_data_by_rooms = {
+        1: [{"total_meters": 30, "floor": 1, "floors_count": 3, "rooms_count": 1}],
+        2: [{"total_meters": 45, "floor": 2, "floors_count": 5, "rooms_count": 2}],
+        3: [{"total_meters": 60, "floor": 4, "floors_count": 9, "rooms_count": 3}],
+        4: [{"total_meters": 80, "floor": 6, "floors_count": 12, "rooms_count": 4}],
+    }
 
-    input_df = pd.DataFrame(data)
+    for room_count in range(1, 5):
+        pattern = os.path.join(model_dir, f"{model_name}_{room_count}room_v*.pkl")
+        matching_files = glob.glob(pattern)
 
-    # Предсказание
-    predicted_prices = model.predict(input_df)
+        if not matching_files:
+            logging.warning(f"Нет модели для {room_count} комнат по шаблону: {pattern}")
+            continue
 
-    # Вывод и логирование
-    logging.info("=== Предсказания модели по массиву данных ===")
-    for features, price in zip(data, predicted_prices):
-        log_msg = (
-            f"Площадь: {features['total_meters']} м², "
-            f"Комнат: {features['rooms_count']}, "
-            f"Этаж: {features['floor']}/{features['floors_count']} → "
-            f"Цена: {price:,.0f} ₽"
+        # Выбираем файл с максимальной версией
+        latest_model_file = max(
+            matching_files, key=lambda f: int(f.split("_v")[-1].replace(".pkl", ""))
         )
-        logging.info(log_msg)
+
+        logging.info(f"Загрузка модели: {latest_model_file}")
+        model = joblib.load(latest_model_file)
+
+        input_data = test_data_by_rooms[room_count]
+        input_df = pd.DataFrame(input_data)
+
+        predicted_prices = model.predict(input_df)
+
+        logging.info(f"=== Предсказания для {room_count}-комнатных квартир ===")
+        for features, price in zip(input_data, predicted_prices):
+            log_msg = (
+                f"Площадь: {features['total_meters']} м², "
+                f"Комнат: {features['rooms_count']}, "
+                f"Этаж: {features['floor']}/{features['floors_count']} → "
+                f"Цена: {price:,.0f} ₽"
+            )
+            logging.info(log_msg)
 
 
 if __name__ == "__main__":
