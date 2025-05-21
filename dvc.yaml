@@ -1,0 +1,20 @@
+stages:
+  preprocess_data:
+    cmd: python src/preprocess.py -p 5
+    deps:
+    - data/raw
+    - src/preprocess.py
+    outs:
+    - data/processed/merged_cleaned.csv
+  train_model:
+    cmd: python src/train_model.py -m xgboost_model
+    deps:
+    - data/processed/merged_cleaned.csv
+    - src/train_model.py
+    outs:
+    - models
+  test_model:
+    cmd: python src/test_model.py -m xgboost_model
+    deps:
+    - models
+    - src/test_model.py
