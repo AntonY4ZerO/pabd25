@@ -230,7 +230,7 @@ if __name__ == "__main__":
         help="Amount of pages to parse",
     )
     args = parser.parse_args()
-    # parse_cian(args.pages)
+    parse_cian(args.pages)
     preprocess_data()
     train_model(args.model)
     test_model(args.model)
