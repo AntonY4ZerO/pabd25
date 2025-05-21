@@ -1,4 +1,4 @@
 venv
 *.log
 notebooks/.ipynb_checkpoints
-/data
+data/processed
