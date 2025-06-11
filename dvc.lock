@@ -1,12 +1,12 @@
 schema: '2.0'
 stages:
   preprocess_data:
-    cmd: python src/preprocess.py
+    cmd: python src/preprocess.py -p 5
     deps:
     - path: data/raw
       hash: md5
-      md5: 060ea9afeac0d47e6776c8d56386621d.dir
-      size: 138485
+      md5: 27526d7c93db24e96424836665253bc1.dir
+      size: 259742
       nfiles: 4
     - path: src/preprocess.py
       hash: md5
@@ -15,15 +15,15 @@ stages:
     outs:
     - path: data/processed/merged_cleaned.csv
       hash: md5
-      md5: 75deac7aba50102f8e47c11ce253c40b
-      size: 15323
+      md5: 7796c15e0aba3ae53bd5dfa364b0a6c0
+      size: 27835
   train_model:
     cmd: python src/train_model.py -m xgboost_model
     deps:
     - path: data/processed/merged_cleaned.csv
       hash: md5
-      md5: 75deac7aba50102f8e47c11ce253c40b
-      size: 15323
+      md5: 7796c15e0aba3ae53bd5dfa364b0a6c0
+      size: 27835
     - path: src/train_model.py
       hash: md5
       md5: f8efe8d2bd19bdfd270860071f4cb352
@@ -31,17 +31,17 @@ stages:
     outs:
     - path: models
       hash: md5
-      md5: 5b337172401021a099045679a3d27a71.dir
-      size: 453054
-      nfiles: 4
+      md5: 9ab7008e10f5392b3ff1122ff027ecdf.dir
+      size: 916540
+      nfiles: 8
   test_model:
     cmd: python src/test_model.py -m xgboost_model
     deps:
     - path: models
       hash: md5
-      md5: 5b337172401021a099045679a3d27a71.dir
-      size: 453054
-      nfiles: 4
+      md5: 9ab7008e10f5392b3ff1122ff027ecdf.dir
+      size: 916540
+      nfiles: 8
     - path: src/test_model.py
       hash: md5
       md5: 24505ed7fc0beccdc3e4c87b92e913e0
