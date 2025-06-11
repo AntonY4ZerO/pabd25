@@ -3,3 +3,4 @@ venv
 notebooks/.ipynb_checkpoints
 data/processed
 /models
+.env

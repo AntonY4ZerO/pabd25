@@ -1,10 +1,19 @@
 from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
+from flask_httpauth import HTTPTokenAuth
+from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 import joblib
 import pandas as pd
 import argparse
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+VALID_TOKEN = os.getenv("API_TOKEN")
 
 app = Flask(__name__)
+CORS(app)
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -83,6 +92,11 @@ def index():
 @app.route("/api/numbers", methods=["POST"])
 def process_numbers():
     params = request.get_json()
+
+    token = params.get("token")
+    if token != VALID_TOKEN:
+        logger.warning("Неверный токен.")
+        return jsonify({"error": "Неверный токен."}), 403
 
     try:
         area = int(params["area"])
