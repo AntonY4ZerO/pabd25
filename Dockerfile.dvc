@@ -1,0 +1,5 @@
+outs:
+- md5: e76f703930debe06a4f1870a9ef8e83e
+  size: 801
+  hash: md5
+  path: Dockerfile

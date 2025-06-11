@@ -13,3 +13,4 @@ dvc
 flask-cors
 boto3 
 flask-httpauth
+gunicorn
