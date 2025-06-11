@@ -3,7 +3,6 @@ pandas
 flask
 numpy
 plotly
-logging
 joblib
 scikit-learn
 xgboost
@@ -14,3 +13,4 @@ flask-cors
 boto3 
 flask-httpauth
 gunicorn
+python-dotenv

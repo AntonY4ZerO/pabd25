@@ -31,17 +31,17 @@ stages:
     outs:
     - path: models
       hash: md5
-      md5: 9ab7008e10f5392b3ff1122ff027ecdf.dir
-      size: 916540
-      nfiles: 8
+      md5: 65f9c6bf7514321d15a21cdb58c50e3c.dir
+      size: 463486
+      nfiles: 4
   test_model:
     cmd: python src/test_model.py -m xgboost_model
     deps:
     - path: models
       hash: md5
-      md5: 9ab7008e10f5392b3ff1122ff027ecdf.dir
-      size: 916540
-      nfiles: 8
+      md5: 65f9c6bf7514321d15a21cdb58c50e3c.dir
+      size: 463486
+      nfiles: 4
     - path: src/test_model.py
       hash: md5
       md5: 24505ed7fc0beccdc3e4c87b92e913e0

@@ -36,22 +36,22 @@ logger.addHandler(console_handler)
 
 
 # --- Аргументы командной строки ---
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Flask-приложение для предсказания цены"
-    )
-    parser.add_argument(
-        "-v",
-        "--version",
-        type=int,
-        required=True,
-        help="Версия модели (например, 1, 2, 3...)",
-    )
-    return parser.parse_args()
+# def parse_args():
+#    parser = argparse.ArgumentParser(
+#        description="Flask-приложение для предсказания цены"
+#    )
+#    parser.add_argument(
+#        "-v",
+#        "--version",
+#        type=int,
+#        required=True,
+#        help="Версия модели (например, 1, 2, 3...)",
+#    )
+#    return parser.parse_args()
 
 
-args = parse_args()
-model_version = args.version
+# args = parse_args()
+# model_version = args.version
 
 
 def format_price(price):
@@ -79,7 +79,7 @@ def load_models(version):
 
 
 # Инициализация моделей
-models = load_models(model_version)
+models = load_models(2)
 
 
 # Маршрут для отображения формы
